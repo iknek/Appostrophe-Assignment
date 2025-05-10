@@ -1,23 +1,21 @@
 package com.example.app_test;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+    private ClickController clickController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,53 +27,20 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        clickController = new ClickController(this);
+        setClickController();
         createCanvas();
     }
 
-    /**
-     * Clear image selection when clicking on canvas
-     */
-    public void imageViewClickHandler(View view){
-        ImageLogic.clearSelection();
+    public void setClickController(){
+        findViewById(R.id.loadImageButton).setOnClickListener(clickController::onClickAddPic);
+        findViewById(R.id.deleteImageButton).setOnClickListener(clickController::onDeletePic);
+        findViewById(R.id.image_view).setOnClickListener(clickController::imageViewClickHandler);
+        findViewById(R.id.backgroundColorSetButton).setOnClickListener(clickController::backgroundColorButtonHandler);
     }
 
-    /**
-     * Logic for button to add picture to our view.
-     * TODO: Add dynamic web fetch api + categories
-     */
-    public void onClickAddPic(View view) {
-        FrameLayout canvas = findViewById(R.id.hscroll_container);
-
-        ImageView imageView = new ImageView(this);
-
-        // Would probably be nicer if these lines were moved to ImageLogic, or at the least abstracted out into their own method....
-        Drawable img = ResourcesCompat.getDrawable(getResources(), R.drawable.image2, null); // Loaded images this way so we can load with 1x size scaling
-        imageView.setImageDrawable(img);
-        int imageWidth = img.getIntrinsicWidth();
-        int imageHeight = img.getIntrinsicHeight();
-
-        imageView.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
-
-        //TODO: Make where image is placed dynamic based on where user has scrolled
-        imageView.setX(200);
-        imageView.setY(200);
-
-        //Init image item logic for when it's added.
-        ImageLogic.initImage(imageView, canvas);
-        canvas.addView(imageView);
-
-        CharSequence text = "Added Image!"; //Maybe something for SCRL to implement? If images are loaded in the same place, they get stacked on top of each other and you might forget ;)
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(this, text, duration);
-        toast.show();
-    }
-
-    /**
-     * Delete item
-     */
-    public void onDeletePic(View view){
-        ImageLogic.deleteImage();
+    public void onColorClick(View view) {
+        clickController.onColorClick(view);
     }
 
     /**

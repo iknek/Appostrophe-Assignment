@@ -34,11 +34,107 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="#EEEEEE"
-                android:onClick="imageViewClickHandler"
                 android:scaleType="fitXY" />
 
         </FrameLayout>
     </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/background_panel"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:background="#444"
+        android:visibility="gone"
+        android:paddingHorizontal="8dp"
+        android:elevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar">
+
+        <TableLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <Button
+                    android:id="@+id/color_white"
+                    android:tag="#FFFFFF"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFFFFF"
+                    android:onClick="onColorClick" />
+                <Button
+                    android:id="@+id/color_grey"
+                    android:layout_width="0dp"
+                    android:tag="#9E9E9E"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#9E9E9E"
+                    android:onClick="onColorClick" />
+                <Button
+                    android:id="@+id/color_beige"
+                    android:layout_width="0dp"
+                    android:tag="#FFECB3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFECB3"
+                    android:onClick="onColorClick" />
+                <Button
+                    android:id="@+id/color_pink"
+                    android:layout_width="0dp"
+                    android:tag="#FFCCBC"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFCCBC"
+                    android:onClick="onColorClick" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <Button
+                    android:id="@+id/color_yellow"
+                    android:tag="#FFD54F"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFD54F"
+                    android:onClick="onColorClick" />
+                <Button
+                    android:id="@+id/color_green"
+                    android:tag="#AED581"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#AED581"
+                    android:onClick="onColorClick" />
+                <Button
+                    android:id="@+id/color_blue"
+                    android:tag="#64B5F6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#64B5F6"
+                    android:onClick="onColorClick" />
+                <Button
+                    android:id="@+id/color_red"
+                    android:tag="#EF5350"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#EF5350"
+                    android:onClick="onColorClick" />
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
 
     <!-- Toolbar -->
     <LinearLayout
@@ -72,7 +168,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/black"
-            android:onClick="onClickAddPic"
             android:text="New Layer"
             android:textColor="#FFFFFF"
             android:textSize="11sp"
@@ -85,7 +180,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/black"
-            android:onClick="onDeletePic"
             android:text="Del. Layer"
             android:textColor="#FFFFFF"
             android:textSize="11sp"

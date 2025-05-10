@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/background_panel"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="#444"
+        android:visibility="gone"
+        android:paddingHorizontal="8dp"
+        android:elevation="4dp">
+
+        <Button
+            android:id="@+id/color_red"
+            android:onClick="setBackgroundRed"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:backgroundTint="#FF0000" />
+
+        <Button
+            android:id="@+id/color_green"
+            android:onClick="setBackgroundGreen"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:backgroundTint="#00FF00" />
+
+        <Button
+            android:id="@+id/color_blue"
+            android:onClick="setBackgroundBlue"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:backgroundTint="#0000FF" />
+
+    </LinearLayout>
+
+</merge>
