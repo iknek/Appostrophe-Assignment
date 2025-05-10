@@ -36,33 +36,64 @@
                 android:background="#EEEEEE"
                 android:onClick="imageViewClickHandler"
                 android:scaleType="fitXY" />
+
         </FrameLayout>
     </HorizontalScrollView>
 
     <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
+    <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="?attr/colorPrimary"
+        android:background="@color/black"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll">
+
+        <Button
+            android:id="@+id/backgroundColorSetButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:text="Background"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            app:icon="@drawable/palette"
+            />
+
+        <Button
+            android:id="@+id/loadImageButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:onClick="onClickAddPic"
+            android:text="New Layer"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            app:icon="@drawable/addline"
+            />
+
+        <Button
+            android:id="@+id/deleteImageButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:onClick="onDeletePic"
+            android:text="Del. Layer"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            app:icon="@drawable/closeline"
+            />
+
+    </LinearLayout>
 
     <!-- Button -->
-    <Button
-        android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#FBF8F8"
-        android:onClick="onClickAddPic"
-        android:text="Button"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/toolbar"
-        app:layout_constraintEnd_toEndOf="@+id/toolbar"
-        app:strokeColor="#FBF8F8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

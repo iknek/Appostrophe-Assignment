@@ -1,9 +1,12 @@
 package com.example.app_test;
 
+import static java.lang.Thread.sleep;
+
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,8 +18,8 @@ import java.util.List;
 public class ImageLogic {
 
     private static ImageView selectedImage = null;
-
-    private static List<ImageView> addedImages = new ArrayList<>();;
+    private static final float SNAP_THRESHOLD = 10f;
+    private static List<ImageView> addedImages = new ArrayList<>();; //Used for checking snapping later
 
     /**
      * Init method for when image is added.
@@ -42,6 +45,14 @@ public class ImageLogic {
         }
     }
 
+    public static void deleteImage() {
+        if (selectedImage != null) {
+            ((FrameLayout) selectedImage.getParent()).removeView(selectedImage);
+            addedImages.remove(selectedImage);
+            selectedImage = null;
+        }
+    }
+
     /**
      * Logic for handling highlighting of items (images) when selected/unselected.
      * @param imageView = image selected by tapping on it.
@@ -57,16 +68,17 @@ public class ImageLogic {
             } else {
                 selectedImage = (ImageView) v;
                 selectedImage.setColorFilter(Color.YELLOW, PorterDuff.Mode.MULTIPLY);
+                selectedImage.setImageLevel(1); //TODO: Set selected image above others it "intersects"
             }
         });
     }
 
     /**
-     * Logic for dragging images accross our oversized screen
+     * Logic for dragging images across our oversized screen
      * @param imageView = image selected by tapping on it.
      */
     private static void setDragLogic(ImageView imageView) {
-        imageView.setOnLongClickListener(v -> { //TODO: Change to non-long click maybe?
+        imageView.setOnLongClickListener(v -> {
             if (selectedImage != v) return false;
             ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
             ClipData dragData = new ClipData(
@@ -79,12 +91,9 @@ public class ImageLogic {
         });
     }
 
-
     /**
      * Logic for "dropping" image by lifting finger from it.
-     * @param dropTarget
      */
-    private static final float SNAP_THRESHOLD = 20f;
     private static void setDropListener(View dropTarget) {
         dropTarget.setOnDragListener((v, event) -> {
             View draggedView = (View) event.getLocalState();
@@ -92,52 +101,10 @@ public class ImageLogic {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
-
                 case DragEvent.ACTION_DRAG_LOCATION: {
-                    // Track X and Y locations whilst moving the image
-                    float newX = event.getX() - draggedView.getWidth() / 2f;
-                    float newY = event.getY() - draggedView.getHeight() / 2f;
-
-                    // And check it compared to all other added images:
-                    for (ImageView other : addedImages) {
-                        if (other == draggedView) continue; // Skip our own image, for obvious reasons...
-
-                        float otherLeft = other.getX();
-                        float otherTop = other.getY();
-                        float otherRight = otherLeft + other.getWidth();
-                        float otherBottom = otherTop + other.getHeight();
-
-                        float dragLeft = newX;
-                        float dragTop = newY;
-                        float dragRight = newX + draggedView.getWidth();
-                        float dragBottom = newY + draggedView.getHeight();
-
-                        // X-axis alignment
-                        if (Math.abs(dragLeft - otherLeft) < SNAP_THRESHOLD)
-                            newX = otherLeft;
-                        else if (Math.abs(dragRight - otherRight) < SNAP_THRESHOLD)
-                            newX = otherRight - draggedView.getWidth();
-                        else if (Math.abs(dragLeft - otherRight) < SNAP_THRESHOLD)
-                            newX = otherRight;
-                        else if (Math.abs(dragRight - otherLeft) < SNAP_THRESHOLD)
-                            newX = otherLeft - draggedView.getWidth();
-
-                        // Y-axis alignment
-                        if (Math.abs(dragTop - otherTop) < SNAP_THRESHOLD)
-                            newY = otherTop;
-                        else if (Math.abs(dragBottom - otherBottom) < SNAP_THRESHOLD)
-                            newY = otherBottom - draggedView.getHeight();
-                        else if (Math.abs(dragTop - otherBottom) < SNAP_THRESHOLD)
-                            newY = otherBottom;
-                        else if (Math.abs(dragBottom - otherTop) < SNAP_THRESHOLD)
-                            newY = otherTop - draggedView.getHeight();
-                    }
-
-                    draggedView.setTranslationX(newX);
-                    draggedView.setTranslationY(newY);
+                    handleSnapping(draggedView, event);
                     return true;
                 }
-
                 case DragEvent.ACTION_DROP:
                     float x = event.getX() - draggedView.getWidth() / 2f;
                     float y = event.getY() - draggedView.getHeight() / 2f;
@@ -149,5 +116,76 @@ public class ImageLogic {
             }
             return false;
         });
+    }
+
+    /**
+     * Method for handling snapping
+     * @param draggedView = Image we are dragging
+     * @param event = ACTION_DRAG_LOCATION used for getting state
+     * TODO: Image goes woooo and flies off if it escapes screen bounds...
+     */
+    private static void handleSnapping(View draggedView, DragEvent event){
+        // Track X and Y locations whilst moving the image
+        float newX = event.getX() - draggedView.getWidth() / 2f;
+        float newY = event.getY() - draggedView.getHeight() / 2f;
+
+        // And check the position compared to all other added images:
+        for (ImageView other : addedImages) {
+            if (other == draggedView) continue; // Skip our own image, for obvious reasons...
+
+            float otherLeft = other.getX();
+            float otherTop = other.getY();
+            float otherRight = otherLeft + other.getWidth();
+            float otherBottom = otherTop + other.getHeight();
+
+            float dragLeft = newX;
+            float dragTop = newY;
+            float dragRight = newX + draggedView.getWidth();
+            float dragBottom = newY + draggedView.getHeight();
+
+            // X-axis alignment
+            if (Math.abs(dragRight - otherLeft) <= SNAP_THRESHOLD) {
+                newX = otherLeft - draggedView.getWidth(); // Align right edge to left edge
+                animateMagnetX(draggedView, newX);
+            }
+            else if (Math.abs(dragLeft - otherRight) <= SNAP_THRESHOLD) {
+                newX = otherRight; // Align left edge to right edge
+                animateMagnetX(draggedView, newX);
+            }
+            // Y-axis alignment
+            if (Math.abs(dragTop - otherBottom) <= SNAP_THRESHOLD){
+                newY = otherBottom;
+                animateMagnetY(draggedView, newY);
+            }
+            else if (Math.abs(dragBottom - otherTop) <= SNAP_THRESHOLD){
+                newY = otherTop;
+                animateMagnetY(draggedView, newY);
+            }
+            break;
+        }
+        draggedView.setTranslationX(newX);
+        draggedView.setTranslationY(newY);
+    }
+
+    /**
+     * Animate to more "gently" snap images together.
+     */
+    private static void animateMagnetX(View draggedView, float newX){
+        draggedView.setX(newX);
+        draggedView.animate()
+                .translationX(newX)
+                .setDuration(20)
+                .start();
+    }
+
+    /**
+     * Animate to more "gently" snap images together.
+    */
+    private static void animateMagnetY(View draggedView, float newY){
+        draggedView.setY(newY);
+        draggedView.animate()
+                .translationY(newY)
+                .setDuration(20)
+                .start();
     }
 }
