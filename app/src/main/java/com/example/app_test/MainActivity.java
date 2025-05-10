@@ -1,5 +1,6 @@
 package com.example.app_test;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -43,14 +45,22 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout canvas = findViewById(R.id.hscroll_container);
 
         ImageView imageView = new ImageView(this);
-        imageView.setImageResource(R.drawable.image);
+
+        Drawable img = ResourcesCompat.getDrawable(getResources(), R.drawable.image2, null); // Loaded images this way so we can load with 1x size scaling
+
+        imageView.setImageDrawable(img);
         imageView.setTag("image_" + System.currentTimeMillis());
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(200, 200); //TODO: Make this dynamic based on image size
+        int imageWidth = img.getIntrinsicWidth();
+        int imageHeight = img.getIntrinsicHeight();
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(imageWidth, imageHeight);
         imageView.setLayoutParams(params);
+
+        //TODO: Make where image is placed dynamic based on where user has scrolled
         imageView.setX(200);
         imageView.setY(200);
 
+        //Init image item logic for when it's added.
         ImageLogic.initImage(imageView, canvas); // New call
 
         canvas.addView(imageView);
