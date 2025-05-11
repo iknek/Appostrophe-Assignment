@@ -156,37 +156,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
-                <Button
+                <ImageButton
                     android:id="@+id/pic1"
                     android:tag="pic1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    app:icon="@drawable/pic1"
-                    android:onClick="loadimage" />
-                <Button
+                    android:background="@drawable/pic1"
+                    android:text=""
+                    android:onClick="loadimage"/>
+                <ImageButton
                     android:id="@+id/pic2"
-                    android:layout_width="0dp"
                     android:tag="pic2"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:backgroundTint="#9E9E9E"
-                    android:onClick="loadimage" />
-                <Button
-                    android:id="@+id/pic3"
                     android:layout_width="0dp"
-                    android:tag="pic3"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#FFECB3"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic2"
                     android:onClick="loadimage" />
-                <Button
-                    android:id="@+id/pic4"
+                <ImageButton
+                    android:id="@+id/pic3"
+                    android:tag="pic3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic3"
+                    android:onClick="loadimage" />
+                <ImageButton
                     android:layout_width="0dp"
                     android:tag="pic4"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#FFCCBC"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic4"
                     android:onClick="loadimage" />
             </TableRow>
 
@@ -194,37 +203,45 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
-                <Button
-                    android:id="@+id/pic5"
+                <ImageButton
+                    android:layout_width="0dp"
                     android:tag="pic5"
-                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#FFD54F"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic5"
                     android:onClick="loadimage" />
-                <Button
-                    android:id="@+id/pic6"
+                <ImageButton
+                    android:layout_width="0dp"
                     android:tag="pic6"
-                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#AED581"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic6"
                     android:onClick="loadimage" />
-                <Button
-                    android:id="@+id/pic7"
+                <ImageButton
+                    android:layout_width="0dp"
                     android:tag="pic7"
-                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#64B5F6"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic7"
                     android:onClick="loadimage" />
-                <Button
-                    android:id="@+id/pic8"
-                    android:tag="pic8"
+                <ImageButton
                     android:layout_width="0dp"
+                    android:tag="pic8"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="#EF5350"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/pic8"
                     android:onClick="loadimage" />
             </TableRow>
         </TableLayout>

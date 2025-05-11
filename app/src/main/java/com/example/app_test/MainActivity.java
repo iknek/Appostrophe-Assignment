@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         createSnapLine();
     }
 
+    /**
+     * Delegates click controller responsibilities.
+     */
     private void setClickController(){
         findViewById(R.id.loadImageButton).setOnClickListener(clickController::onClickAddPic);
         findViewById(R.id.deleteImageButton).setOnClickListener(clickController::onDeletePic);
@@ -60,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         clickController.onClickAddPic(view);
     }
 
-
     /**
      * Sets the size of our FrameLayout, and over-sized ImageView, based on device screen width.
      * Also sets our 4 dividers.
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         HorizontalScrollView scrollView = findViewById(R.id.horizontal_scroll);
 
         WindowManager windowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        int screenWidth = windowManager.getMaximumWindowMetrics().getBounds().width();
+        int screenWidth = windowManager.getMaximumWindowMetrics().getBounds().width()-40;
 
         scrollView.post(() -> {
             scrollAreaHeight = scrollView.getHeight();
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             canvas.setLayoutParams(canvasParams);
 
             // Add 4 dividers at 25% intervals
-            positions.add(0);
+            positions.add(1);
             positions.add(screenWidth);
             positions.add(2 * screenWidth);
             positions.add(3 * screenWidth);

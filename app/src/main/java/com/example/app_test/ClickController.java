@@ -82,7 +82,7 @@ public class ClickController{
     }
 
     /**
-     * Open image select
+     * Open image select panel
      */
     public void imageSelectClickHandler(View view){
         LinearLayout panel = activity.findViewById(R.id.image_selector);
@@ -104,40 +104,12 @@ public class ClickController{
     }
 
     /**
-     * Logic for button to add picture to our view.
-     * TODO: Add dynamic web fetch api + categories, move out of here!!
+     * Delegates click action for creating image to ImageLogic
      */
     public void onClickAddPic(View view) {
-        FrameLayout canvas = activity.findViewById(R.id.hscroll_container);
-
-        ImageView imageView = new ImageView(activity);
-        String imageID = (String) view.getTag();
-        setImageDimensions(imageView, imageID);
-
-        //TODO: Make where image is placed dynamic based on where user has scrolled
-        imageView.setX(200);
-        imageView.setY(200);
-
-        //Init image item logic for when it's added.
-        ImageLogic.initImage(imageView, canvas);
-        canvas.addView(imageView);
-
-        CharSequence text = "Added Image!"; //Maybe something for SCRL to implement? If images are loaded in the same place, they get stacked on top of each other and you might forget ;)
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(activity, text, duration);
-        toast.show();
+        ImageLogic.createImage(activity,view);
     }
 
-    private void setImageDimensions(ImageView imageView, String id){
-        int resId = activity.getResources().getIdentifier(id, "drawable", activity.getPackageName());
-        Drawable img = ResourcesCompat.getDrawable(activity.getResources(), resId, null);
-        imageView.setImageDrawable(img);
-
-        int imageWidth = (img.getIntrinsicWidth()/5);
-        int imageHeight = img.getIntrinsicHeight()/5;
-        imageView.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
-    }
 
     /**
      * Delete item

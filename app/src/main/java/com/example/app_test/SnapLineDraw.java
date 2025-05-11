@@ -19,7 +19,9 @@ public class SnapLineDraw extends View {
         paint.setStrokeWidth(7);
     }
 
-    /** Call this to update the line’s endpoints and show it **/
+    /**
+     * Call to update line’s endpoints and show it
+    */
     public void showLine(float x1, float y1, boolean vertical) {
         bringToFront();
         if (vertical) {
@@ -30,12 +32,13 @@ public class SnapLineDraw extends View {
         invalidate();
     }
 
-    /** Hide the line (e.g. when drag ends) **/
+    /**
+     *  Hides line (e.g. when drag ends)
+    */
     public void clearLines() {
         snapLines.clear();
         invalidate();
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
