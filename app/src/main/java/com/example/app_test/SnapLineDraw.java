@@ -15,8 +15,8 @@ public class SnapLineDraw extends View {
 
     public SnapLineDraw(Context ctx) {
         super(ctx);
-        paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(10);
+        paint.setColor(Color.parseColor("#81D4FA"));
+        paint.setStrokeWidth(7);
     }
 
     /** Call this to update the line’s endpoints and show it **/

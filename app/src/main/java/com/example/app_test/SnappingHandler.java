@@ -97,63 +97,44 @@ public class SnappingHandler {
         for (ImageView other : addedImages) {
             if (other == draggedView) continue;
 
-            float otherLeft = other.getX(), otherTop = other.getY();
-            float otherRight = otherLeft + other.getWidth();
-            float otherBottom = otherTop + other.getHeight();
-            float otherCenterX = otherLeft + other.getWidth() / 2f;
-            float otherCenterY = otherTop + other.getHeight() / 2f;
+            float oLeft = other.getX(), oTop = other.getY();
+            float oRight = oLeft + other.getWidth(), oBottom = oTop + other.getHeight();
+            float oCenterX = oLeft + other.getWidth() / 2f, oCenterY = oTop + other.getHeight() / 2f;
 
-            // → X‐axis snaps
-            // a) dragged’s right to other’s left
-            float dist = Math.abs(rightBorder - otherLeft);
-            if (dist < bestXDistance) {
-                bestXDistance   = dist;
-                bestXTarget     = otherLeft - draggedView.getWidth();
-                bestXBoundary   = otherLeft;
-                snapX           = true;
-            }
-            // b) dragged’s left to other’s right
-            dist = Math.abs(leftBorder - otherRight);
-            if (dist < bestXDistance) {
-                bestXDistance   = dist;
-                bestXTarget     = otherRight;
-                bestXBoundary   = otherRight;
-                snapX           = true;
-            }
-            // c) dragged's center to other's center (X-axis)
-            dist = Math.abs(draggedCenterX - otherCenterX);
-            if (dist < bestXDistance) {
-                bestXDistance = dist;
-                bestXTarget = otherCenterX - draggedView.getWidth() / 2f;
-                bestXBoundary = otherCenterX;
-                snapX = true;
+            float[][] xCandidates = {
+                    {Math.abs(rightBorder - oLeft), oLeft - draggedView.getWidth(), oLeft},
+                    {Math.abs(leftBorder - oRight), oRight, oRight},
+                    {Math.abs(draggedCenterX - oLeft), oLeft - draggedView.getWidth() / 2f, oLeft},
+                    {Math.abs(draggedCenterX - oRight), oRight - draggedView.getWidth() / 2f, oRight},
+                    {Math.abs(draggedCenterX - oCenterX), oCenterX - draggedView.getWidth() / 2f, oCenterX}
+            };
+
+            float[][] yCandidates = {
+                    {Math.abs(topBorder - oCenterY), oCenterY, oCenterY},
+                    {Math.abs(bottomBorder - oCenterY), oCenterY - draggedView.getHeight(), oCenterY},
+                    {Math.abs(topBorder - oBottom), oBottom, oBottom},
+                    {Math.abs(bottomBorder - oTop), oTop - draggedView.getHeight(), oTop},
+                    {Math.abs(draggedCenterY - oCenterY), oCenterY - draggedView.getHeight() / 2f, oCenterY},
+                    {Math.abs(draggedCenterY - oTop), oTop - draggedView.getHeight() / 2f, oTop},
+                    {Math.abs(draggedCenterY - oBottom), oBottom - draggedView.getHeight() / 2f, oBottom}
+            };
+
+            for (float[] x : xCandidates) {
+                if (x[0] < bestXDistance) {
+                    bestXDistance = x[0];
+                    bestXTarget = x[1];
+                    bestXBoundary = x[2];
+                    snapX = true;
+                }
             }
 
-            // → Y‐axis snaps
-
-            // a) dragged’s top to other’s bottom
-            dist = Math.abs(topBorder - otherBottom);
-            if (dist < bestYDistance) {
-                bestYDistance   = dist;
-                bestYTarget     = otherBottom;
-                bestYBoundary   = otherBottom;
-                snapY           = true;
-            }
-            // b) dragged’s bottom to other’s top
-            dist = Math.abs(bottomBorder - otherTop);
-            if (dist < bestYDistance) {
-                bestYDistance   = dist;
-                bestYTarget     = otherTop - draggedView.getHeight();
-                bestYBoundary   = otherTop;
-                snapY           = true;
-            }
-            // c) dragged's center to other's center (Y-axis)
-            dist = Math.abs(draggedCenterY - otherCenterY);
-            if (dist < bestYDistance) {
-                bestYDistance = dist;
-                bestYTarget = otherCenterY - draggedView.getHeight() / 2f;
-                bestYBoundary = otherCenterY;
-                snapY = true;
+            for (float[] y : yCandidates) {
+                if (y[0] < bestYDistance) {
+                    bestYDistance = y[0];
+                    bestYTarget = y[1];
+                    bestYBoundary = y[2];
+                    snapY = true;
+                }
             }
         }
 
