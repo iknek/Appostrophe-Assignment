@@ -23,7 +23,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private ClickController clickController;
     private ArrayList<Integer> positions = new ArrayList<>();
-    private int screenWidth;
     private int scrollAreaHeight;
 
     @Override
@@ -36,18 +35,15 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        handleDeviceScreenDimensions();
+
         clickController = new ClickController(this);
         setClickController();
         createCanvas();
 
-        SnapLineDraw snapLine = new SnapLineDraw(this);
-        ViewGroup root = findViewById(R.id.hscroll_container);
-        root.addView(snapLine, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-        SnappingHandler.setSnapLineDraw(snapLine);
+        createSnapLine();
     }
 
-    public void setClickController(){
+    private void setClickController(){
         findViewById(R.id.loadImageButton).setOnClickListener(clickController::onClickAddPic);
         findViewById(R.id.deleteImageButton).setOnClickListener(clickController::onDeletePic);
         findViewById(R.id.image_view).setOnClickListener(clickController::imageViewClickHandler);
@@ -66,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.image_view);
         FrameLayout canvas = findViewById(R.id.hscroll_container);
         HorizontalScrollView scrollView = findViewById(R.id.horizontal_scroll);
+
+        WindowManager windowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        int screenWidth = windowManager.getMaximumWindowMetrics().getBounds().width();
 
         scrollView.post(() -> {
             scrollAreaHeight = scrollView.getHeight();
@@ -100,8 +99,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void handleDeviceScreenDimensions(){
-        WindowManager windowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        screenWidth = windowManager.getMaximumWindowMetrics().getBounds().width();
+    private void createSnapLine(){
+        SnapLineDraw snapLine = new SnapLineDraw(this);
+        ViewGroup root = findViewById(R.id.hscroll_container);
+        root.addView(snapLine, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        SnappingHandler.setSnapLineDraw(snapLine);
     }
 }

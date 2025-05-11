@@ -60,9 +60,8 @@ public class ImageLogic {
      */
     private static void setSelectionLogic(ImageView imageView) {
         imageView.setOnClickListener(v -> {
-            if (selectedImage != null) {
-                selectedImage.setColorFilter(null);
-            }
+            if (selectedImage != null) selectedImage.setColorFilter(null);
+
             if (selectedImage == v) {
                 selectedImage.setColorFilter(null);
                 selectedImage = null;

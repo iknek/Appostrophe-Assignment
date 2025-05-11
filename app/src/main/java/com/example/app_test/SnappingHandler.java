@@ -30,10 +30,9 @@ public class SnappingHandler {
         float bottomBorder = topBorder + draggedView.getHeight();
 
         //Check if image is close to canvas size bounds or dividers
-        checkCanvasSnapping(draggedView, rightBorder, leftBorder, topBorder, bottomBorder);
-
-        // And check the position compared to all other added images:
-        checkImageToImageSnapping(draggedView, rightBorder, leftBorder, topBorder, bottomBorder);
+        if (!checkCanvasSnapping(draggedView, rightBorder, leftBorder, topBorder, bottomBorder)) {
+            checkImageToImageSnapping(draggedView, rightBorder, leftBorder, topBorder, bottomBorder);
+        };
 
         draggedView.setTranslationX(leftBorder);
         draggedView.setTranslationY(topBorder);
@@ -44,29 +43,33 @@ public class SnappingHandler {
      * a) image left or right side is close to horizontal dividers or parent left/right borders
      * b) close to the parent top/bottom borders
      * */
-    private static void checkCanvasSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder, float bottomBorder){
+    private static boolean checkCanvasSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder, float bottomBorder){
         for (int boundary: positions) {
             if (Math.abs(rightBorder - boundary) <= SNAP_THRESHOLD) {
                 animateMagnetX(draggedView, (boundary - draggedView.getWidth()));
                 if(snapLineDraw != null) snapLineDraw.showLine(boundary, 0, true);
-                return;
+                return true;
             } else if (Math.abs(leftBorder - boundary) <= SNAP_THRESHOLD) {
                 animateMagnetX(draggedView, boundary);
                 if(snapLineDraw != null) snapLineDraw.showLine(boundary, 0, true);
-                return;
+                return true;
             }
         }
         //Top of container snapping
         if (Math.abs(topBorder) <= SNAP_THRESHOLD) {
+            if(snapLineDraw != null) snapLineDraw.showLine(0, 0, false);
             animateMagnetY(draggedView, 0f);
-            return;
+            return true;
         }
         // Bottom
         float containerHeight = ((View) draggedView.getParent()).getHeight();
         if (Math.abs(bottomBorder - containerHeight) <= SNAP_THRESHOLD) {
             topBorder = containerHeight - draggedView.getHeight();
+            if(snapLineDraw != null) snapLineDraw.showLine(0, containerHeight, false);
             animateMagnetY(draggedView, topBorder);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -77,7 +80,7 @@ public class SnappingHandler {
      */
     private static void checkImageToImageSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder,   float bottomBorder) {
 
-        float bestXDistance  = SNAP_THRESHOLD;
+        float bestXDistance = SNAP_THRESHOLD;
         float bestYDistance  = SNAP_THRESHOLD;
         float bestXTarget    = leftBorder;  // where to set X
         float bestYTarget    = topBorder;   // where to set Y
