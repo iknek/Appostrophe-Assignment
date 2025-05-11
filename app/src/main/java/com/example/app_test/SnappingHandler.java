@@ -12,6 +12,7 @@ public class SnappingHandler {
     private static List<ImageView> addedImages = new ArrayList<>(); //Used for checking snapping later
     private static ArrayList<Integer> positions;
     private static SnapLineDraw snapLineDraw;
+    private static ArrayList<Integer> halfBoundarySnapList = new ArrayList<>();
 
     public static void setSnapLineDraw(SnapLineDraw view) {
         snapLineDraw = view;
@@ -23,53 +24,58 @@ public class SnappingHandler {
      * @param event = ACTION_DRAG_LOCATION used for getting state
      */
     static void handleSnapping(View draggedView, DragEvent event){
-        // Track all 4 sides (X/Y locations) whilst moving the image
-        float leftBorder = event.getX() - draggedView.getWidth() / 2f;
-        float topBorder = event.getY() - draggedView.getHeight() / 2f;
-        float rightBorder = leftBorder + draggedView.getWidth();
-        float bottomBorder = topBorder + draggedView.getHeight();
+        if (snapLineDraw != null) snapLineDraw.clearLines();
+        // Track all 4 borders/sides (X/Y locations) whilst moving the image
+        float left = event.getX() - draggedView.getWidth() / 2f;
+        float top = event.getY() - draggedView.getHeight() / 2f;
+        float right = left + draggedView.getWidth();
+        float bottom = top + draggedView.getHeight();
 
         //Check if image is close to canvas size bounds or dividers
-        if (!checkCanvasSnapping(draggedView, rightBorder, leftBorder, topBorder, bottomBorder)) {
-            checkImageToImageSnapping(draggedView, rightBorder, leftBorder, topBorder, bottomBorder);
-        };
+        checkCanvasSnapping(draggedView, right, left, top, bottom);
+        checkImageToImageSnapping(draggedView, right, left, top, bottom);
 
-        draggedView.setTranslationX(leftBorder);
-        draggedView.setTranslationY(topBorder);
+        draggedView.setTranslationX(left);
+        draggedView.setTranslationY(top);
     }
 
     /**
      * Check if:
-     * a) image left or right side is close to horizontal dividers or parent left/right borders
-     * b) close to the parent top/bottom borders
-     * */
-    private static boolean checkCanvasSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder, float bottomBorder){
+     * a) image left or right side is close to horizontal dividers (including page horizontal ends)
+     * or image at:
+     * b) top or bottom of page
+     * c) in the horizontal middle of a container
+     * d) vertical page middle
+     */
+    private static void checkCanvasSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder, float bottomBorder){
         for (int boundary: positions) {
-            if (Math.abs(rightBorder - boundary) <= SNAP_THRESHOLD) {
-                animateMagnetX(draggedView, (boundary - draggedView.getWidth()));
-                if(snapLineDraw != null) snapLineDraw.showLine(boundary, 0, true);
-                return true;
-            } else if (Math.abs(leftBorder - boundary) <= SNAP_THRESHOLD) {
-                animateMagnetX(draggedView, boundary);
-                if(snapLineDraw != null) snapLineDraw.showLine(boundary, 0, true);
-                return true;
-            }
+            if (Math.abs(rightBorder - boundary) <= SNAP_THRESHOLD)
+                animateRenderX(draggedView,boundary - draggedView.getWidth(), boundary);
+            else if (Math.abs(leftBorder - boundary) <= SNAP_THRESHOLD)
+                animateRenderX(draggedView,boundary, boundary);
         }
-        //Top of container snapping
-        if (Math.abs(topBorder) <= SNAP_THRESHOLD) {
-            if(snapLineDraw != null) snapLineDraw.showLine(0, 0, false);
-            animateMagnetY(draggedView, 0f);
-            return true;
-        }
-        // Bottom
+
+        //Top of page snapping
+        if (Math.abs(topBorder) <= SNAP_THRESHOLD)
+            animateRenderY(draggedView,0,0);
+
+        // Bottom of page snapping
         float containerHeight = ((View) draggedView.getParent()).getHeight();
-        if (Math.abs(bottomBorder - containerHeight) <= SNAP_THRESHOLD) {
-            topBorder = containerHeight - draggedView.getHeight();
-            if(snapLineDraw != null) snapLineDraw.showLine(0, containerHeight, false);
-            animateMagnetY(draggedView, topBorder);
-            return true;
+        if (Math.abs(bottomBorder - containerHeight) <= SNAP_THRESHOLD)
+            animateRenderY(draggedView,containerHeight - draggedView.getHeight(),containerHeight);
+
+        // Horizontal middle of container snapping
+        float viewWidth = draggedView.getWidth();
+        for (int boundary: halfBoundarySnapList) {
+            if (Math.abs((leftBorder + viewWidth / 2f) - boundary) <= SNAP_THRESHOLD)
+                animateRenderX(draggedView,(boundary-viewWidth / 2f), boundary);
         }
-        return false;
+
+        // Vertical middle of page snapping
+        float imageVCenter = topBorder + draggedView.getHeight() / 2f;
+        float canvasVCenter = containerHeight / 2f;
+        if (Math.abs(imageVCenter - canvasVCenter) <= SNAP_THRESHOLD)
+            animateRenderY(draggedView,(canvasVCenter - draggedView.getHeight() / 2f), canvasVCenter);
     }
 
     /**
@@ -79,108 +85,126 @@ public class SnappingHandler {
      * snap to closest image (or don't if there aren't any)
      */
     private static void checkImageToImageSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder,   float bottomBorder) {
-
-        float bestXDistance = SNAP_THRESHOLD;
-        float bestYDistance  = SNAP_THRESHOLD;
+        float bestXDistance = SNAP_THRESHOLD, bestYDistance  = SNAP_THRESHOLD;
         float bestXTarget    = leftBorder;  // where to set X
         float bestYTarget    = topBorder;   // where to set Y
-        float bestXBoundary  = 0;           // where to draw vertical line
-        float bestYBoundary  = 0;           // where to draw horizontal line
+        float bestXBoundary  = 0, bestYBoundary  = 0; // where to draw vertical and horizontal line
         boolean snapX = false, snapY = false;
+
+        float draggedCenterX = leftBorder + draggedView.getWidth() / 2f;
+        float draggedCenterY = topBorder + draggedView.getHeight() / 2f;
 
         for (ImageView other : addedImages) {
             if (other == draggedView) continue;
 
-            float oL = other.getX();
-            float oT = other.getY();
-            float oR = oL + other.getWidth();
-            float oB = oT + other.getHeight();
+            float otherLeft = other.getX(), otherTop = other.getY();
+            float otherRight = otherLeft + other.getWidth();
+            float otherBottom = otherTop + other.getHeight();
+            float otherCenterX = otherLeft + other.getWidth() / 2f;
+            float otherCenterY = otherTop + other.getHeight() / 2f;
 
             // → X‐axis snaps
             // a) dragged’s right to other’s left
-            float dist = Math.abs(rightBorder - oL);
+            float dist = Math.abs(rightBorder - otherLeft);
             if (dist < bestXDistance) {
                 bestXDistance   = dist;
-                bestXTarget     = oL - draggedView.getWidth();
-                bestXBoundary   = oL;
+                bestXTarget     = otherLeft - draggedView.getWidth();
+                bestXBoundary   = otherLeft;
                 snapX           = true;
             }
             // b) dragged’s left to other’s right
-            dist = Math.abs(leftBorder - oR);
+            dist = Math.abs(leftBorder - otherRight);
             if (dist < bestXDistance) {
                 bestXDistance   = dist;
-                bestXTarget     = oR;
-                bestXBoundary   = oR;
+                bestXTarget     = otherRight;
+                bestXBoundary   = otherRight;
                 snapX           = true;
+            }
+            // c) dragged's center to other's center (X-axis)
+            dist = Math.abs(draggedCenterX - otherCenterX);
+            if (dist < bestXDistance) {
+                bestXDistance = dist;
+                bestXTarget = otherCenterX - draggedView.getWidth() / 2f;
+                bestXBoundary = otherCenterX;
+                snapX = true;
             }
 
             // → Y‐axis snaps
+
             // a) dragged’s top to other’s bottom
-            dist = Math.abs(topBorder - oB);
+            dist = Math.abs(topBorder - otherBottom);
             if (dist < bestYDistance) {
                 bestYDistance   = dist;
-                bestYTarget     = oB;
-                bestYBoundary   = oB;
+                bestYTarget     = otherBottom;
+                bestYBoundary   = otherBottom;
                 snapY           = true;
             }
             // b) dragged’s bottom to other’s top
-            dist = Math.abs(bottomBorder - oT);
+            dist = Math.abs(bottomBorder - otherTop);
             if (dist < bestYDistance) {
                 bestYDistance   = dist;
-                bestYTarget     = oT - draggedView.getHeight();
-                bestYBoundary   = oT;
+                bestYTarget     = otherTop - draggedView.getHeight();
+                bestYBoundary   = otherTop;
                 snapY           = true;
+            }
+            // c) dragged's center to other's center (Y-axis)
+            dist = Math.abs(draggedCenterY - otherCenterY);
+            if (dist < bestYDistance) {
+                bestYDistance = dist;
+                bestYTarget = otherCenterY - draggedView.getHeight() / 2f;
+                bestYBoundary = otherCenterY;
+                snapY = true;
             }
         }
 
         // Apply snapping
-        if (snapX) {
-            animateMagnetX(draggedView, bestXTarget);
-            snapLineDraw.showLine(bestXBoundary, 0, true);
-        }
-        else if (snapY) {
-            animateMagnetY(draggedView, bestYTarget);
-            snapLineDraw.showLine(0, bestYBoundary, false);
-        }
-        else {
-            snapLineDraw.hideLine();
-        }
+        if (snapX) animateRenderX(draggedView,bestXTarget,bestXBoundary);
+        if (snapY) animateRenderY(draggedView, bestYTarget,bestYBoundary);
     }
 
     public static void hideSnapLine(){
         if (snapLineDraw != null){
-            snapLineDraw.hideLine();
+            snapLineDraw.clearLines();
         }
     }
 
+    /**
+     * Animate to more "gently" snap X-coordinates together,
+     * and draw snap lines.
+     */
+    private static void animateRenderX(View view, float newX, float lineX) {
+        view.setX(newX);
+        view.animate().translationX(newX).setDuration(20).start();
+        if (snapLineDraw != null) snapLineDraw.showLine(lineX, 0, true);
+    }
+
+    /**
+     * Animate to more "gently" snap Y-coordinates together,
+     * and draw snap lines.
+     */
+    private static void animateRenderY(View view, float newY, float lineY) {
+        view.setY(newY);
+        view.animate().translationY(newY).setDuration(20).start();
+        if (snapLineDraw != null) snapLineDraw.showLine(0, (int) lineY, false);
+    }
+
+    /**
+     * Sets the visible and invisible boundary lists.
+     * @param pos = visible boundary list
+     */
     public static void setCanvasSplitPositions(ArrayList<Integer> pos){
-        positions = pos;
-        positions.add(positions.get(3) + (positions.get(1))); //add right side end of screen boundary
-    }
+        positions = new ArrayList<>(pos);
+        int screenWidth = positions.get(1);
+        positions.add(screenWidth*4); //add right side end of screen boundary
 
-    /**
-     * Animation to more "gently" snap X-coordinates.
-     */
-    private static void animateMagnetX(View draggedView, float newX){
-        draggedView.setX(newX);
-        draggedView.animate()
-                .translationX(newX)
-                .setDuration(20)
-                .start();
-    }
-
-    /**
-     * Animation to more "gently" snap Y-coordinates together.
-     */
-    private static void animateMagnetY(View draggedView, float newY){
-        draggedView.setY(newY);
-        draggedView.animate()
-                .translationY(newY)
-                .setDuration(20)
-                .start();
+        // Also add "invisible" boundaries for snapping in the middle of 2 boundaries
+        halfBoundarySnapList.add(screenWidth/2);
+        halfBoundarySnapList.add(screenWidth + screenWidth/2);
+        halfBoundarySnapList.add(2*screenWidth + screenWidth/2);
     }
 
     protected static void setAddedImages(List<ImageView> images){
         addedImages = images;
     }
+
 }

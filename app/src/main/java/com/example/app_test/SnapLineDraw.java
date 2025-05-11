@@ -6,10 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SnapLineDraw extends View {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private float startX, startY, endX, endY;
-    private boolean shouldDraw = false;
+    private final List<Line> snapLines = new ArrayList<>();
 
     public SnapLineDraw(Context ctx) {
         super(ctx);
@@ -21,31 +23,38 @@ public class SnapLineDraw extends View {
     public void showLine(float x1, float y1, boolean vertical) {
         bringToFront();
         if (vertical) {
-            startX = x1;
-            endX = x1;
-            startY = 0;
-            endY = getHeight();
+            snapLines.add(new Line(x1, 0, x1, getHeight()));
         } else {
-            startY = y1;
-            endY = y1;
-            startX = 0;
-            endX = getWidth();
+            snapLines.add(new Line(0, y1, getWidth(), y1));
         }
-        shouldDraw = true;
         invalidate();
     }
 
     /** Hide the line (e.g. when drag ends) **/
-    public void hideLine() {
-        shouldDraw = false;
+    public void clearLines() {
+        snapLines.clear();
         invalidate();
     }
 
+
     @Override
     protected void onDraw(Canvas canvas) {
-        if (shouldDraw) {
-            canvas.drawLine(startX, startY, endX, endY, paint);
+        for (Line line : snapLines) {
+            canvas.drawLine(line.startX, line.startY, line.endX, line.endY, paint);
         }
     }
+
+    private static class Line {
+        float startX, startY, endX, endY;
+        Line(float x1, float y1, float x2, float y2) {
+            this.startX = x1;
+            this.startY = y1;
+            this.endX = x2;
+            this.endY = y2;
+        }
+    }
+
 }
+
+
 
