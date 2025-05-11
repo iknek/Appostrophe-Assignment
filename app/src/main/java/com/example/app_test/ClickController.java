@@ -79,13 +79,7 @@ public class ClickController{
 
         ImageView imageView = new ImageView(activity);
 
-        // Would probably be nicer if these lines were moved to ImageLogic, or at the least abstracted out into their own method....
-        Drawable img = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.image2, null); // Loaded images this way so we can load with 1x size scaling
-        imageView.setImageDrawable(img);
-        int imageWidth = img.getIntrinsicWidth();
-        int imageHeight = img.getIntrinsicHeight();
-
-        imageView.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
+        setImageDimensions(imageView);
 
         //TODO: Make where image is placed dynamic based on where user has scrolled
         imageView.setX(200);
@@ -100,6 +94,14 @@ public class ClickController{
 
         Toast toast = Toast.makeText(activity, text, duration);
         toast.show();
+    }
+
+    private void setImageDimensions(ImageView imageView){
+        Drawable img = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.image2, null); // Loaded images this way so we can load with 1x size scaling
+        imageView.setImageDrawable(img);
+        int imageWidth = img.getIntrinsicWidth();
+        int imageHeight = img.getIntrinsicHeight();
+        imageView.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
     }
 
     /**
