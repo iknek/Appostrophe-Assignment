@@ -75,9 +75,7 @@ public class SnappingHandler {
      * check if its closer than any other checked image (to the dragged image)
      * snap to closest image (or don't if there aren't any)
      */
-    private static void checkImageToImageSnapping(View draggedView,
-                                                  float rightBorder, float leftBorder,
-                                                  float topBorder,   float bottomBorder) {
+    private static void checkImageToImageSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder,   float bottomBorder) {
 
         float bestXDistance  = SNAP_THRESHOLD;
         float bestYDistance  = SNAP_THRESHOLD;
@@ -145,7 +143,6 @@ public class SnappingHandler {
             snapLineDraw.hideLine();
         }
     }
-
 
     public static void hideSnapLine(){
         if (snapLineDraw != null){
