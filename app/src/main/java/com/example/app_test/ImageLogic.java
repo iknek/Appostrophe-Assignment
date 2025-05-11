@@ -2,7 +2,9 @@ package com.example.app_test;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.view.DragEvent;
 import android.view.View;
@@ -78,15 +80,33 @@ public class ImageLogic {
     private static void setDragLogic(ImageView imageView) {
         imageView.setOnLongClickListener(v -> {
             if (selectedImage != v) return false;
+            final View view = v;
+
+            View.DragShadowBuilder transparentShadow = new View.DragShadowBuilder(view) {
+                @Override
+                public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
+                    int w = view.getWidth();
+                    int h = view.getHeight();
+                    outShadowSize.set(w, h);
+                    outShadowTouchPoint.set(w/2, h/2);
+                }
+                @Override
+                public void onDrawShadow(Canvas canvas) {
+                    // Don't draw a shadow
+                }
+            };
+
             ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
             ClipData dragData = new ClipData(
                     (CharSequence) v.getTag(),
-                    new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-                    item);
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDragAndDrop(dragData, shadowBuilder, v, 0);
+                    new String[]{ ClipDescription.MIMETYPE_TEXT_PLAIN },
+                    item
+            );
+
+            v.startDragAndDrop(dragData, transparentShadow, v, 0);
             return true;
         });
+
     }
 
     /**
