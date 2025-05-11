@@ -22,7 +22,7 @@ public class ClickController{
     }
 
     /**
-     * Handler for picking background color
+     * Handler for (opening panel) picking background color
      */
     public void backgroundColorButtonHandler(View view){
         LinearLayout panel = activity.findViewById(R.id.background_panel);

@@ -4,7 +4,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,12 @@ public class SnappingHandler {
     private static final float SNAP_THRESHOLD = 10f;
     private static List<ImageView> addedImages = new ArrayList<>(); //Used for checking snapping later
     private static ArrayList<Integer> positions;
+    private static SnapLineDraw snapLineDraw;
+
+    public static void setSnapLineDraw(SnapLineDraw view) {
+        snapLineDraw = view;
+    }
+
     /**
      * Method for handling snapping
      * @param draggedView = Image we are dragging
@@ -43,9 +48,11 @@ public class SnappingHandler {
         for (int boundary: positions) {
             if (Math.abs(rightBorder - boundary) <= SNAP_THRESHOLD) {
                 animateMagnetX(draggedView, (boundary - draggedView.getWidth()));
+                if(snapLineDraw != null) snapLineDraw.showLine(boundary, 0, true);
                 return;
             } else if (Math.abs(leftBorder - boundary) <= SNAP_THRESHOLD) {
                 animateMagnetX(draggedView, boundary);
+                if(snapLineDraw != null) snapLineDraw.showLine(boundary, 0, true);
                 return;
             }
         }
@@ -68,61 +75,81 @@ public class SnappingHandler {
      * check if its closer than any other checked image (to the dragged image)
      * snap to closest image (or don't if there aren't any)
      */
-    private static void checkImageToImageSnapping(View draggedView, float rightBorder, float leftBorder, float topBorder, float bottomBorder){
-        float bestXDistance = SNAP_THRESHOLD;
-        float bestXTarget = leftBorder;  // default no-snap
-        boolean snapX = false;
+    private static void checkImageToImageSnapping(View draggedView,
+                                                  float rightBorder, float leftBorder,
+                                                  float topBorder,   float bottomBorder) {
 
-        float bestYDistance = SNAP_THRESHOLD;
-        float bestYTarget = topBorder;   // default no-snap
-        boolean snapY = false;
+        float bestXDistance  = SNAP_THRESHOLD;
+        float bestYDistance  = SNAP_THRESHOLD;
+        float bestXTarget    = leftBorder;  // where to set X
+        float bestYTarget    = topBorder;   // where to set Y
+        float bestXBoundary  = 0;           // where to draw vertical line
+        float bestYBoundary  = 0;           // where to draw horizontal line
+        boolean snapX = false, snapY = false;
 
         for (ImageView other : addedImages) {
             if (other == draggedView) continue;
 
-            float otherLeft = other.getX();
-            float otherTop = other.getY();
-            float otherRight = otherLeft + other.getWidth();
-            float otherBottom = otherTop + other.getHeight();
+            float oL = other.getX();
+            float oT = other.getY();
+            float oR = oL + other.getWidth();
+            float oB = oT + other.getHeight();
 
-            // X-axis alignment
-            // 1) dragged's right edge to other's left edge
-            float dist = Math.abs(rightBorder - otherLeft);
+            // → X‐axis snaps
+            // a) dragged’s right to other’s left
+            float dist = Math.abs(rightBorder - oL);
             if (dist < bestXDistance) {
-                bestXDistance = dist;
-                bestXTarget   = otherLeft - draggedView.getWidth();
-                snapX         = true;
+                bestXDistance   = dist;
+                bestXTarget     = oL - draggedView.getWidth();
+                bestXBoundary   = oL;
+                snapX           = true;
             }
-            // 2) dragged's left edge to other's right edge
-            dist = Math.abs(leftBorder - otherRight);
+            // b) dragged’s left to other’s right
+            dist = Math.abs(leftBorder - oR);
             if (dist < bestXDistance) {
-                bestXDistance = dist;
-                bestXTarget   = otherRight;
-                snapX         = true;
+                bestXDistance   = dist;
+                bestXTarget     = oR;
+                bestXBoundary   = oR;
+                snapX           = true;
             }
 
-            // Y-axis alignment
-            // 1) dragged's top edge to other's bottom edge
-            dist = Math.abs(topBorder - otherBottom);
+            // → Y‐axis snaps
+            // a) dragged’s top to other’s bottom
+            dist = Math.abs(topBorder - oB);
             if (dist < bestYDistance) {
-                bestYDistance = dist;
-                bestYTarget   = otherBottom;
-                snapY         = true;
+                bestYDistance   = dist;
+                bestYTarget     = oB;
+                bestYBoundary   = oB;
+                snapY           = true;
             }
-            // 2) dragged's bottom edge to other's top edge
-            dist = Math.abs(bottomBorder - otherRight);
+            // b) dragged’s bottom to other’s top
+            dist = Math.abs(bottomBorder - oT);
             if (dist < bestYDistance) {
-                bestYDistance = dist;
-                bestYTarget   = otherRight - draggedView.getHeight();
-                snapY         = true;
+                bestYDistance   = dist;
+                bestYTarget     = oT - draggedView.getHeight();
+                bestYBoundary   = oT;
+                snapY           = true;
             }
         }
-        // Apply best snap if available
+
+        // Apply snapping
         if (snapX) {
             animateMagnetX(draggedView, bestXTarget);
+            snapLineDraw.showLine(bestXBoundary, 0, true);
         }
-        if (snapY) {
+        else if (snapY) {
             animateMagnetY(draggedView, bestYTarget);
+            snapLineDraw.showLine(0, bestYBoundary, false);
+        }
+        else {
+            snapLineDraw.hideLine();
+        }
+    }
+
+
+    public static void hideSnapLine(){
+        if (snapLineDraw != null){
+            snapLineDraw.hideLine();
         }
     }
 

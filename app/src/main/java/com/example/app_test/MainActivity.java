@@ -1,5 +1,7 @@
 package com.example.app_test;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -38,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
         clickController = new ClickController(this);
         setClickController();
         createCanvas();
+
+        SnapLineDraw snapLine = new SnapLineDraw(this);
+        ViewGroup root = findViewById(R.id.hscroll_container);
+        root.addView(snapLine, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        SnappingHandler.setSnapLineDraw(snapLine);
     }
 
     public void setClickController(){
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
             for (int x : positions) {
                 View divider = new View(this);
-                FrameLayout.LayoutParams dividerParams = new FrameLayout.LayoutParams(4, FrameLayout.LayoutParams.MATCH_PARENT);
+                FrameLayout.LayoutParams dividerParams = new FrameLayout.LayoutParams(4, MATCH_PARENT);
                 dividerParams.leftMargin = x;
                 divider.setLayoutParams(dividerParams);
                 divider.setBackgroundColor(Color.BLACK);

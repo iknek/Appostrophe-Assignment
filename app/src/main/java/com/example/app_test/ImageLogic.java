@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ImageLogic {
     private static ImageView selectedImage = null;
-    private static List<ImageView> addedImages = new ArrayList<>();; //Used for checking snapping later
+    private static List<ImageView> addedImages = new ArrayList<>(); //Used for checking snapping later
 
     /**
      * Init method for when image is added.
@@ -43,6 +43,9 @@ public class ImageLogic {
         }
     }
 
+    /**
+     * Delete selected image
+     */
     public static void deleteImage() {
         if (selectedImage != null) {
             ((FrameLayout) selectedImage.getParent()).removeView(selectedImage);
@@ -66,7 +69,6 @@ public class ImageLogic {
             } else {
                 selectedImage = (ImageView) v;
                 selectedImage.setColorFilter(Color.YELLOW, PorterDuff.Mode.MULTIPLY);
-                selectedImage.setImageLevel(1); //TODO: Set selected image above others it "intersects"
             }
         });
     }
@@ -113,7 +115,6 @@ public class ImageLogic {
     private static void setDropListener(View dropTarget) {
         dropTarget.setOnDragListener((v, event) -> {
             View draggedView = (View) event.getLocalState();
-
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
@@ -128,6 +129,7 @@ public class ImageLogic {
                     draggedView.setTranslationY(y);
                     return true;
                 case DragEvent.ACTION_DRAG_ENDED:
+                    SnappingHandler.hideSnapLine();
                     return true;
             }
             return false;
