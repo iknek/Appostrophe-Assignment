@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             positions.add(2 * screenWidth);
             positions.add(3 * screenWidth);
 
-            ImageLogic.setCanvasSplitPositions(positions);
+            SnappingHandler.setCanvasSplitPositions(positions);
 
             for (int x : positions) {
                 View divider = new View(this);
