@@ -15,8 +15,8 @@ import androidx.core.content.res.ResourcesCompat;
  */
 public class ClickController{
     private final Activity activity;
-    private boolean isTabOpen = false;
-
+    private boolean isColorTabOpen = false;
+    private boolean isImageSelectTabOpen = false;
     public ClickController(Activity activity) {
         this.activity = activity;
     }
@@ -26,7 +26,7 @@ public class ClickController{
      */
     public void backgroundColorButtonHandler(View view){
         LinearLayout panel = activity.findViewById(R.id.background_panel);
-        isTabOpen = true;
+        isColorTabOpen = true;
         if (panel.getVisibility() == View.GONE) {
             panel.setVisibility(View.VISIBLE);
             panel.setTranslationY(panel.getHeight());
@@ -53,21 +53,54 @@ public class ClickController{
     }
 
     /**
-     * Close color picker if open, and clear image selection : when clicking on canvas
+     * Close the open panel (color or image picker)
      */
     public void imageViewClickHandler(View view){
-        if (isTabOpen) {
+        if (isColorTabOpen) {
             LinearLayout panel = activity.findViewById(R.id.background_panel);
-            panel.animate()
-                    .translationY(panel.getHeight())
-                    .setDuration(200)
-                    .withEndAction(() -> {
-                        panel.setVisibility(View.GONE);
-                        isTabOpen = false;
-                    })
-                    .start();
+            clearPanel(panel);
         }
+        if(isImageSelectTabOpen){
+            LinearLayout panel = activity.findViewById(R.id.image_selector);
+            clearPanel(panel);
+        }
+    }
+
+    /**
+     * Helper method, reduced duplicate code in imageViewClickHandler
+     */
+    private void clearPanel(LinearLayout panel){
+        panel.animate()
+                .translationY(panel.getHeight())
+                .setDuration(200)
+                .withEndAction(() -> {
+                    panel.setVisibility(View.GONE);
+                    isColorTabOpen = false;
+                })
+                .start();
         ImageLogic.clearSelection();
+    }
+
+    /**
+     * Open image select
+     */
+    public void imageSelectClickHandler(View view){
+        LinearLayout panel = activity.findViewById(R.id.image_selector);
+        isImageSelectTabOpen = true;
+        if (panel.getVisibility() == View.GONE) {
+            panel.setVisibility(View.VISIBLE);
+            panel.setTranslationY(panel.getHeight());
+            panel.post(() -> {
+                panel.setTranslationY(panel.getHeight());
+                panel.animate().translationY(0).setDuration(200).start();
+            });
+        } else {
+            panel.animate()
+                .translationY(panel.getHeight())
+                .setDuration(200)
+                .withEndAction(() -> panel.setVisibility(View.GONE))
+                .start();
+        }
     }
 
     /**
@@ -78,8 +111,8 @@ public class ClickController{
         FrameLayout canvas = activity.findViewById(R.id.hscroll_container);
 
         ImageView imageView = new ImageView(activity);
-
-        setImageDimensions(imageView);
+        String imageID = (String) view.getTag();
+        setImageDimensions(imageView, imageID);
 
         //TODO: Make where image is placed dynamic based on where user has scrolled
         imageView.setX(200);
@@ -96,11 +129,13 @@ public class ClickController{
         toast.show();
     }
 
-    private void setImageDimensions(ImageView imageView){
-        Drawable img = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.image2, null); // Loaded images this way so we can load with 1x size scaling
+    private void setImageDimensions(ImageView imageView, String id){
+        int resId = activity.getResources().getIdentifier(id, "drawable", activity.getPackageName());
+        Drawable img = ResourcesCompat.getDrawable(activity.getResources(), resId, null);
         imageView.setImageDrawable(img);
-        int imageWidth = img.getIntrinsicWidth();
-        int imageHeight = img.getIntrinsicHeight();
+
+        int imageWidth = (img.getIntrinsicWidth()/5);
+        int imageHeight = img.getIntrinsicHeight()/5;
         imageView.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
     }
 

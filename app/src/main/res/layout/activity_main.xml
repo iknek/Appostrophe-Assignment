@@ -132,9 +132,103 @@
                     android:onClick="onColorClick" />
             </TableRow>
         </TableLayout>
-
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/image_selector"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:background="#444"
+        android:visibility="gone"
+        android:paddingHorizontal="8dp"
+        android:elevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar">
+
+        <TableLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <Button
+                    android:id="@+id/pic1"
+                    android:tag="pic1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:icon="@drawable/pic1"
+                    android:onClick="loadimage" />
+                <Button
+                    android:id="@+id/pic2"
+                    android:layout_width="0dp"
+                    android:tag="pic2"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#9E9E9E"
+                    android:onClick="loadimage" />
+                <Button
+                    android:id="@+id/pic3"
+                    android:layout_width="0dp"
+                    android:tag="pic3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFECB3"
+                    android:onClick="loadimage" />
+                <Button
+                    android:id="@+id/pic4"
+                    android:layout_width="0dp"
+                    android:tag="pic4"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFCCBC"
+                    android:onClick="loadimage" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <Button
+                    android:id="@+id/pic5"
+                    android:tag="pic5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFD54F"
+                    android:onClick="loadimage" />
+                <Button
+                    android:id="@+id/pic6"
+                    android:tag="pic6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#AED581"
+                    android:onClick="loadimage" />
+                <Button
+                    android:id="@+id/pic7"
+                    android:tag="pic7"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#64B5F6"
+                    android:onClick="loadimage" />
+                <Button
+                    android:id="@+id/pic8"
+                    android:tag="pic8"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="#EF5350"
+                    android:onClick="loadimage" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
     <!-- Toolbar -->
     <LinearLayout
         android:id="@+id/toolbar"

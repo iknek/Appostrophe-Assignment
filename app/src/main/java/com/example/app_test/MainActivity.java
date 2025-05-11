@@ -47,12 +47,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.loadImageButton).setOnClickListener(clickController::onClickAddPic);
         findViewById(R.id.deleteImageButton).setOnClickListener(clickController::onDeletePic);
         findViewById(R.id.image_view).setOnClickListener(clickController::imageViewClickHandler);
+        findViewById(R.id.image_view).setOnClickListener(clickController::imageViewClickHandler);
         findViewById(R.id.backgroundColorSetButton).setOnClickListener(clickController::backgroundColorButtonHandler);
+        findViewById(R.id.loadImageButton).setOnClickListener(clickController::imageSelectClickHandler);
     }
 
     public void onColorClick(View view) {
         clickController.onColorClick(view);
     }
+
+    public void loadimage(View view) {
+        clickController.onClickAddPic(view);
+    }
+
 
     /**
      * Sets the size of our FrameLayout, and over-sized ImageView, based on device screen width.
