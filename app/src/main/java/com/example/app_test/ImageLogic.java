@@ -11,10 +11,18 @@ import android.graphics.drawable.Drawable;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,45 +30,88 @@ import java.util.List;
 public class ImageLogic {
     private static ImageView selectedImage = null;
     private static List<ImageView> addedImages = new ArrayList<>(); //Used for checking snapping later
+    static List<String> loadedImageUrls = null;
 
+    static boolean hasLoaded = false;
+    public static boolean hasLoaded(boolean loaded){
+        if(loaded){
+            hasLoaded = true;
+        }
+        return hasLoaded;
+    }
     /**
      * Logic for addding picture to our view.
      * TODO: Add dynamic web fetch api + categories, move out of here!!
      */
-    protected static void createImage(Activity activity, View view){
-        FrameLayout canvas = activity.findViewById(R.id.hscroll_container);
+    static void loadImageSelectorIcons(Activity activity, List<String> imageUrls) {
+        loadedImageUrls = imageUrls;
+        int[] buttonIds = {
+                R.id.pic1, R.id.pic2, R.id.pic3, R.id.pic4,
+                R.id.pic5, R.id.pic6, R.id.pic7, R.id.pic8
+        };
 
-        ImageView imageView = new ImageView(activity);
-        String imageID = (String) view.getTag();
-        getImageDrawable(imageView, imageID, activity);
+        for (int i = 0; i < buttonIds.length && i <= imageUrls.size(); i++) {
+            ImageButton btn = activity.findViewById(buttonIds[i]);
+            String url = imageUrls.get(i);
 
-        //TODO: Make where image is placed dynamic based on where user has scrolled
-        imageView.setX(200);
-        imageView.setY(200);
+            Glide.with(activity)
+                    .asDrawable()
+                    .load(url)
+                    .into(new CustomTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, Transition<? super Drawable> transition) {
+                            btn.setImageDrawable(resource);
+                        }
 
-        //Init image item logic for when it's added.
-        initImage(imageView, canvas);
-        canvas.addView(imageView);
-
-        CharSequence text = "Added Image!"; //Maybe something for SCRL to implement? If images are loaded in the same place, they get stacked on top of each other and you might forget ;)
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(activity, text, duration);
-        toast.show();
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {}
+                    });
+        }
     }
 
     /**
      * Loads image using button tag (id) and sets dimensions
      */
-    private static void getImageDrawable(ImageView imageView, String id, Activity activity){
-        int resId = activity.getResources().getIdentifier(id, "drawable", activity.getPackageName());
-        Drawable img = ResourcesCompat.getDrawable(activity.getResources(), resId, null);
-        imageView.setImageDrawable(img);
+    protected static void createImage(Activity activity, View view){
+        if(!hasLoaded){
+            Toast.makeText(activity, "Images not loaded from network yet!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        FrameLayout canvas = activity.findViewById(R.id.hscroll_container);
+        int imageID = Integer.valueOf(view.getTag().toString());
 
-        int imageWidth = (img.getIntrinsicWidth()/5);
-        int imageHeight = img.getIntrinsicHeight()/5;
-        imageView.setLayoutParams(new FrameLayout.LayoutParams(imageWidth, imageHeight));
-    }
+        ImageView imageView = new ImageView(activity);
+
+        Glide.with(activity)
+                .load(loadedImageUrls.get(imageID-1))
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                        imageView.setImageDrawable(resource);
+
+                        int originalWidth = resource.getIntrinsicWidth();
+                        int originalHeight = resource.getIntrinsicHeight();
+
+                        // Scale down to 1/2 of original size
+                        int scaledWidth = originalWidth / 2;
+                        int scaledHeight = originalHeight / 2;
+
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(scaledWidth, scaledHeight);
+                        imageView.setLayoutParams(params);
+
+                        imageView.setX(200); imageView.setY(200);
+
+                        initImage(imageView, canvas);
+                        canvas.addView(imageView);
+                    }
+
+                    @Override
+                    public void onLoadCleared(Drawable placeholder) {
+                        // Handle cleanup if needed
+                    }
+                });
+        Toast.makeText(activity, "Added Images!", Toast.LENGTH_SHORT).show();
+        }
 
     /**
      * Init method for when image is added.

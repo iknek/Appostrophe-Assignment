@@ -135,7 +135,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/image_selector"
+            android:id="@+id/image_selector"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:orientation="horizontal"
@@ -158,45 +158,44 @@
                 android:layout_weight="1">
                 <ImageButton
                     android:id="@+id/pic1"
-                    android:tag="pic1"
+                    android:tag="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/pic1"
-                    android:text=""
-                    android:onClick="loadimage"/>
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:onClick="loadimage" />
                 <ImageButton
                     android:id="@+id/pic2"
-                    android:tag="pic2"
+                    android:tag="2"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/pic2"
-                    android:onClick="loadimage" />
+                    android:onClick="loadimage"  />
                 <ImageButton
                     android:id="@+id/pic3"
-                    android:tag="pic3"
+                    android:tag="3"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/pic3"
-                    android:onClick="loadimage" />
+                    android:onClick="loadimage"  />
                 <ImageButton
+                    android:id="@+id/pic4"
+                    android:tag="4"
                     android:layout_width="0dp"
-                    android:tag="pic4"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/pic4"
-                    android:onClick="loadimage" />
+                    android:onClick="loadimage"  />
             </TableRow>
 
             <TableRow
@@ -204,45 +203,45 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1">
                 <ImageButton
+                    android:id="@+id/pic5"
+                    android:tag="5"
                     android:layout_width="0dp"
-                    android:tag="pic5"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/pic5"
-                    android:onClick="loadimage" />
+                    android:onClick="loadimage"  />
+                <ImageButton
+                    android:id="@+id/pic6"
+                    android:tag="6"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/transparent"
+                    android:onClick="loadimage"  />
                 <ImageButton
                     android:layout_width="0dp"
-                    android:tag="pic6"
+                    android:id="@+id/pic7"
+                    android:tag="7"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/pic6"
-                    android:onClick="loadimage" />
+                    android:onClick="loadimage"  />
                 <ImageButton
+                    android:id="@+id/pic8"
+                    android:tag="8"
                     android:layout_width="0dp"
-                    android:tag="pic7"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/pic7"
-                    android:onClick="loadimage" />
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:tag="pic8"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/pic8"
-                    android:onClick="loadimage" />
+                    android:onClick="loadimage"  />
             </TableRow>
         </TableLayout>
     </LinearLayout>

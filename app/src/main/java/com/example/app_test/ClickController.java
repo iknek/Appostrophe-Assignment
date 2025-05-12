@@ -3,6 +3,7 @@ package com.example.app_test;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -100,6 +101,9 @@ public class ClickController{
                 .setDuration(200)
                 .withEndAction(() -> panel.setVisibility(View.GONE))
                 .start();
+        }
+        if(!ImageLogic.hasLoaded){
+            Toast.makeText(activity, "Loading images", Toast.LENGTH_SHORT).show();
         }
     }
 

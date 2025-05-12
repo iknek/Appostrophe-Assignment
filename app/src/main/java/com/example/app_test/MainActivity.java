@@ -5,6 +5,9 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -18,10 +21,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.json.JSONException;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends AppCompatActivity {
     private ClickController clickController;
+    private Networking netWorker = new Networking();
     private ArrayList<Integer> positions = new ArrayList<>();
     private int scrollAreaHeight;
 
@@ -41,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         createCanvas();
 
         createSnapLine();
+        netWorker.setUpNet(this, urls -> runOnUiThread(() -> {
+            ImageLogic.loadImageSelectorIcons(this, urls);
+            ImageLogic.hasLoaded(true);
+        }));
+
     }
 
     /**
