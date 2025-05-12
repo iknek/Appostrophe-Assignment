@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends AppCompatActivity {
     private ClickController clickController;
-    private Networking netWorker = new Networking();
     private ArrayList<Integer> positions = new ArrayList<>();
     private int scrollAreaHeight;
 
@@ -48,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
         clickController = new ClickController(this);
         setClickController();
         createCanvas();
-
         createSnapLine();
+
+        Networking netWorker = new Networking();
         netWorker.setUpNet(this, urls -> runOnUiThread(() -> {
             ImageLogic.loadImageSelectorIcons(this, urls);
             ImageLogic.hasLoaded(true);

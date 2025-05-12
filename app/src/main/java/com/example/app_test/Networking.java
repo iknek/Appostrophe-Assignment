@@ -1,7 +1,5 @@
 package com.example.app_test;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -22,9 +20,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class Networking {
-
     private static final ByteArrayOutputStream responseData = new ByteArrayOutputStream();
-    private static boolean isinit = true;
     private static List<String> stickerImageUrls = new ArrayList<>();
 
     public interface UrlsCallback {
@@ -46,9 +42,10 @@ public class Networking {
         request.start();
     }
 
-
+    /**
+     * Request callback, defines what happens based on the response we receive.
+     */
     static class MyUrlRequestCallback extends UrlRequest.Callback {
-        private static final String TAG = "MyUrlRequestCallback";
         private final UrlsCallback callback;
         MyUrlRequestCallback(UrlsCallback callback) {
             this.callback = callback;
@@ -56,7 +53,7 @@ public class Networking {
         @Override
         public void onRedirectReceived(UrlRequest request, UrlResponseInfo info, String newLocationUrl) {
             request.cancel();
-            Log.i(TAG,"redirect recieved");
+            Log.i("MyUrlRequestCallback","redirect recieved");
         }
 
         @Override
@@ -66,7 +63,7 @@ public class Networking {
 
         @Override
         public void onReadCompleted(UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
-            Log.i(TAG, "onReadCompleted method called.");
+            Log.i("MyUrlRequestCallback", "onReadCompleted method called.");
             byteBuffer.flip();
             byte[] bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
@@ -86,11 +83,12 @@ public class Networking {
         }
 
         @Override
-        public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException error) {
-
-        }
+        public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException error) { } //Quick, get the network admin!
     }
 
+    /**
+     * Code to extract Imageurls from our recieved json string. Overkill, but useful feature addition in the future.
+     */
     private static void getUrls() throws UnsupportedEncodingException, JSONException {
         String jsonString = responseData.toString("UTF-8");
         JSONArray categories = new JSONArray(jsonString);
@@ -102,22 +100,12 @@ public class Networking {
                 for (int j = 0; j < items.length(); j++) {
                     JSONObject item = items.getJSONObject(j);
                     if (item.has("source_url")) {
-                        Log.i(TAG, "added: " + item.getString("source_url"));
+                        Log.i("GETURLS", "added: " + item.getString("source_url"));
                         stickerImageUrls.add(item.getString("source_url"));
-                        if(isinit && i==7){
-                            return;
-                        }
                     }
                 }
             }
         }
-        isinit = false;
     }
-
-    public static List<String> getStickerImageUrls() throws UnsupportedEncodingException, JSONException {
-        getUrls();
-        return stickerImageUrls;
-
-    }
-
 }
+

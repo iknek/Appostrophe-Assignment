@@ -102,7 +102,7 @@ public class ClickController{
                 .withEndAction(() -> panel.setVisibility(View.GONE))
                 .start();
         }
-        if(!ImageLogic.hasLoaded){
+        if(!ImageLogic.hasLoaded()){
             Toast.makeText(activity, "Loading images", Toast.LENGTH_SHORT).show();
         }
     }

@@ -17,8 +17,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -30,18 +28,21 @@ import java.util.List;
 public class ImageLogic {
     private static ImageView selectedImage = null;
     private static List<ImageView> addedImages = new ArrayList<>(); //Used for checking snapping later
-    static List<String> loadedImageUrls = null;
+    private static List<String> loadedImageUrls = null;
+    private static boolean hasLoaded = false;
 
-    static boolean hasLoaded = false;
     public static boolean hasLoaded(boolean loaded){
         if(loaded){
             hasLoaded = true;
         }
         return hasLoaded;
     }
+    //Overload method, basically a getter/setter
+    public static boolean hasLoaded(){
+        return hasLoaded;
+    }
     /**
-     * Logic for addding picture to our view.
-     * TODO: Add dynamic web fetch api + categories, move out of here!!
+     * Logic for adding assigning pictures to the "add image" icons
      */
     static void loadImageSelectorIcons(Activity activity, List<String> imageUrls) {
         loadedImageUrls = imageUrls;
@@ -70,15 +71,15 @@ public class ImageLogic {
     }
 
     /**
-     * Loads image using button tag (id) and sets dimensions
+     * Loads selected image by using button tag (id), sets dimensions, adds to canvas
      */
     protected static void createImage(Activity activity, View view){
         if(!hasLoaded){
-            Toast.makeText(activity, "Images not loaded from network yet!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Images not yet finished loading from network!", Toast.LENGTH_SHORT).show();
             return;
         }
         FrameLayout canvas = activity.findViewById(R.id.hscroll_container);
-        int imageID = Integer.valueOf(view.getTag().toString());
+        int imageID = Integer.parseInt(view.getTag().toString());
 
         ImageView imageView = new ImageView(activity);
 
@@ -89,34 +90,25 @@ public class ImageLogic {
                     public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
                         imageView.setImageDrawable(resource);
 
-                        int originalWidth = resource.getIntrinsicWidth();
-                        int originalHeight = resource.getIntrinsicHeight();
-
                         // Scale down to 1/2 of original size
-                        int scaledWidth = originalWidth / 2;
-                        int scaledHeight = originalHeight / 2;
+                        int scaledWidth = resource.getIntrinsicWidth() / 2;
+                        int scaledHeight = resource.getIntrinsicHeight() / 2;
 
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(scaledWidth, scaledHeight);
-                        imageView.setLayoutParams(params);
-
-                        imageView.setX(200); imageView.setY(200);
-
+                        imageView.setLayoutParams(new FrameLayout.LayoutParams(scaledWidth, scaledHeight));
                         initImage(imageView, canvas);
-                        canvas.addView(imageView);
                     }
-
                     @Override
-                    public void onLoadCleared(Drawable placeholder) {
-                        // Handle cleanup if needed
-                    }
+                    public void onLoadCleared(Drawable placeholder) {}
                 });
         Toast.makeText(activity, "Added Images!", Toast.LENGTH_SHORT).show();
-        }
+    }
 
     /**
      * Init method for when image is added.
      */
     private static void initImage(ImageView imageView, FrameLayout canvas) {
+        imageView.setX(200); imageView.setY(200);
+
         setSelectionLogic(imageView);
         setDragLogic(imageView);
         // Set drop listener only once
@@ -126,6 +118,7 @@ public class ImageLogic {
         }
         addedImages.add(imageView);
         SnappingHandler.setAddedImages(addedImages);
+        canvas.addView(imageView);
     }
 
     /**
