@@ -10,7 +10,10 @@ Defines how the snap lines are rendered, their basic behavior, and maintains a l
 Defines the snapping logic (when to snap, how, to what), how the snapping is animated, and defines both static and dynamic snap lines.
 
 ## ImageLogic
-Defines how images are added/removed, creates ImageView objects, and defines how selection, drag, and associated drop listener functions work.
+Defines how images are added/removed, creates ImageView objects using provided image URLs, sets image-select button icons, and defines how selection, drag, and associated drop listener functions work.
 
 ## Click Controller 
 Controller class to handle all onClick events, as well as managing the "extended" panels for changing background color & selecting what image to load.
+
+## Networking
+Network connection handler, sends HTTP request to image endpoint, creates JSON object of response, and uses it to retrieve image (sticker) URLs (which are then used in ImageLogic).
