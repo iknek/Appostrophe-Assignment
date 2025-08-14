@@ -1,4 +1,4 @@
-Github repo for a test I did when looking to be hired by Appostrophe. Essentially a clone of their basic app. 
+Basic clone of Appostrophe's photo editing app.  
 
 Code overview:
 
