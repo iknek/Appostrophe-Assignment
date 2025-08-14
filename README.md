@@ -1,4 +1,6 @@
-Github repo for the Appostrophe assignment. Basic code overview:
+Github repo for a test I did when looking to be hired by Appostrophe. Essentially a clone of their basic app. 
+
+Code overview:
 
 ## Main Activity 
 Handles inital startup logic (e.g. gets screen dimensions, creates canvas, creates initial snap line object), and delegates responsibilites to relevant classes.  
